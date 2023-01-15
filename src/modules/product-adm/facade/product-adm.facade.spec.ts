@@ -4,6 +4,7 @@ import { AddProductUseCase } from "../usecase/add-product/add-product.usecase";
 import { ProductAdmFacade } from "./product-adm.facade";
 import { ProductModel } from "../repository/product.model";
 import { Id } from "../../@shared/domain/value-object/id.value-object";
+import { ProductAdmFacadeFactory } from "../factory/facade.factory";
 
 describe("Product Adm Facade test", () => {
   let sequelize: Sequelize;
@@ -25,13 +26,7 @@ describe("Product Adm Facade test", () => {
   });
 
   it("should create a product dfsf", async () => {
-    const productRepository = new ProductRepository();
-    const addProductUseCase = new AddProductUseCase(productRepository);
-
-    const productFacade = new ProductAdmFacade({
-      addProductUseCase: addProductUseCase,
-      checkStockUseCase: undefined,
-    });
+    const productFacade = ProductAdmFacadeFactory.create();
 
     const input = {
       id: "1",
