@@ -12,7 +12,7 @@ export class AddProductUseCase {
 
   async execute(input: AddProductInputDTO): Promise<AddProductOutputDTO> {
     const props = {
-      id: new Id(),
+      id: new Id(input.id),
       name: input.name,
       description: input.description,
       purchasePrice: input.purchasePrice,
@@ -21,7 +21,7 @@ export class AddProductUseCase {
 
     const product = new Product(props);
 
-    this._productRepository.add(product);
+    await this._productRepository.add(product);
 
     return {
       id: product.id.id,

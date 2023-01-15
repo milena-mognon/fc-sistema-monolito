@@ -1,3 +1,5 @@
+import { Id } from "../../@shared/domain/value-object/id.value-object";
+
 export interface AddProductFacadeInputDTO {
   id?: string;
   name: string;

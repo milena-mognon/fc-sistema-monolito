@@ -5,22 +5,22 @@ import { Id } from "../../@shared/domain/value-object/id.value-object";
 import { ProductRepository } from "./product.repository";
 
 describe("ProductRepository test", () => {
-  let sequilize: Sequelize;
+  let sequelize: Sequelize;
 
   beforeEach(async () => {
-    sequilize = new Sequelize({
+    sequelize = new Sequelize({
       dialect: "sqlite",
       storage: ":memory:",
       logging: false,
       sync: { force: true },
     });
 
-    await sequilize.addModels([ProductModel]);
-    await sequilize.sync();
+    await sequelize.addModels([ProductModel]);
+    await sequelize.sync();
   });
 
   afterEach(async () => {
-    await sequilize.close();
+    await sequelize.close();
   });
 
   it("should create a product", async () => {
