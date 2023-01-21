@@ -25,7 +25,7 @@ describe("Product Adm Facade test", () => {
     await sequelize.close();
   });
 
-  it("should create a product dfsf", async () => {
+  it("should create a product", async () => {
     const productFacade = ProductAdmFacadeFactory.create();
 
     const input = {
@@ -45,5 +45,24 @@ describe("Product Adm Facade test", () => {
     expect(product.description).toBe(input.description);
     expect(product.purchasePrice).toBe(input.purchasePrice);
     expect(product.stock).toBe(input.stock);
+  });
+
+  it("should check stock of a product", async () => {
+    const productFacade = ProductAdmFacadeFactory.create();
+
+    const input = {
+      id: "1",
+      name: "Product 1",
+      description: "Product 1 description",
+      purchasePrice: 10,
+      stock: 10,
+    };
+
+    await productFacade.addProduct(input);
+
+    const result = await productFacade.checkStock({ productId: input.id });
+
+    expect(result.productId).toBe(input.id);
+    expect(result.stock).toBe(input.stock);
   });
 });
