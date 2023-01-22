@@ -21,7 +21,7 @@ describe("ProductRepository test", () => {
     await sequelize.close();
   });
 
-  it("shold find all products", async () => {
+  it("should find all products", async () => {
     await ProductModel.create({
       id: "1",
       name: "Product 1",
@@ -49,5 +49,23 @@ describe("ProductRepository test", () => {
     expect(products[1].name).toBe("Product 2");
     expect(products[1].description).toBe("Product 2 Description");
     expect(products[1].salesPrice).toBe(200);
+  });
+
+  it("should find a products", async () => {
+    await ProductModel.create({
+      id: "1",
+      name: "Product 1",
+      description: "Product 1 Description",
+      salesPrice: 100,
+    });
+
+    const productRepository = new ProductRepository();
+
+    const product = await productRepository.find("1");
+
+    expect(product.id.id).toBe("1");
+    expect(product.name).toBe("Product 1");
+    expect(product.description).toBe("Product 1 Description");
+    expect(product.salesPrice).toBe(100);
   });
 });
