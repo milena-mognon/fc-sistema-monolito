@@ -1,9 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
-import { ProductRepository } from "../repository/product.repository";
-import { AddProductUseCase } from "../usecase/add-product/add-product.usecase";
-import { ProductAdmFacade } from "./product-adm.facade";
 import { ProductModel } from "../repository/product.model";
-import { Id } from "../../@shared/domain/value-object/id.value-object";
 import { ProductAdmFacadeFactory } from "../factory/facade.factory";
 
 describe("Product Adm Facade test", () => {
