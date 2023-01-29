@@ -1,11 +1,5 @@
 import { Sequelize } from "sequelize-typescript";
 import { ClientModel } from "../repository/client.model";
-import { ClientRepository } from "../repository/client.repository";
-import { AddClientUseCase } from "../usecase/add-client/add-client.usecase";
-import { ClientAdmFacade } from "./client-adm.facade";
-import { FindClientUseCase } from "../usecase/find-client/find-client.usecase";
-import { Client } from "../domain/client.entity";
-import { Id } from "../../@shared/domain/value-object/id.value-object";
 import { ClientAdmFacadeFactory } from "../factory/facade.factory";
 
 describe("Client Adm Facade test", () => {
