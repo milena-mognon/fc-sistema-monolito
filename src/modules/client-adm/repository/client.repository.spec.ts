@@ -44,8 +44,8 @@ describe("ProductRepository test", () => {
     expect(clientDb.name).toBe(input.name);
     expect(clientDb.email).toBe(input.email);
     expect(clientDb.address).toBe(input.address);
-    expect(clientDb.createdAt).toEqual(input.createdAt);
-    expect(clientDb.updatedAt).toEqual(input.updatedAt);
+    expect(clientDb.createdAt).toStrictEqual(input.createdAt);
+    expect(clientDb.updatedAt).toStrictEqual(input.updatedAt);
   });
 
   it("should find a client", async () => {
