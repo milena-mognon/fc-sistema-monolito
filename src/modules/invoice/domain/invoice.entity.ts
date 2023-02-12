@@ -36,7 +36,7 @@ export class Invoice extends BaseEntity implements AggregateRoot {
     return this._document;
   }
 
-  get addres(): Address {
+  get address(): Address {
     return this._address;
   }
 
