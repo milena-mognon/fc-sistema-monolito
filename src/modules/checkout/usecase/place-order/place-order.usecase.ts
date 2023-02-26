@@ -1,5 +1,6 @@
 import { UseCaseInterface } from "../../../@shared/domain/usecase/usecase.interface";
 import { ClientAdmFacdeInterface } from "../../../client-adm/facade/client-adm.facade.interface";
+import { ProductAdmFacadeInterface } from "../../../product-adm/facade/product-adm.facede.interface";
 import {
   PlaceOrderInputDTO,
   PlaceOrderOutputDTO,
@@ -7,9 +8,14 @@ import {
 
 export class PlaceOrderUseCase implements UseCaseInterface {
   private _clientFacade: ClientAdmFacdeInterface;
+  private _productFacade: ProductAdmFacadeInterface;
 
-  constructor(clientFacade: ClientAdmFacdeInterface) {
+  constructor(
+    clientFacade: ClientAdmFacdeInterface,
+    productFacade: ProductAdmFacadeInterface
+  ) {
     this._clientFacade = clientFacade;
+    this._productFacade = productFacade;
   }
 
   async execute(input: PlaceOrderInputDTO): Promise<PlaceOrderOutputDTO> {
@@ -50,6 +56,18 @@ export class PlaceOrderUseCase implements UseCaseInterface {
   private async validateProducts(input: PlaceOrderInputDTO): Promise<void> {
     if (input.products.length === 0) {
       throw new Error("No Products selected");
+    }
+
+    for (const p of input.products) {
+      const product = await this._productFacade.checkStock({
+        productId: p.productId,
+      });
+
+      if (product.stock <= 0) {
+        throw new Error(
+          `Product ${product.productId} is not available in stock`
+        );
+      }
     }
   }
 }
