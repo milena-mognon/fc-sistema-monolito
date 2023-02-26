@@ -23,5 +23,33 @@ describe("Place Order usecase unit test", () => {
         new Error("Client not found")
       );
     });
+
+    it("should throw an error when products are not valid", async () => {
+      const mockClientFacade = {
+        find: jest.fn().mockResolvedValue(true),
+      };
+
+      //@ts-expect-error - no params in constructor
+      const placeOrderUseCase = new PlaceOrderUseCase();
+
+      const mockValidateProduct = jest
+        //@ts-expect-error - spy on private method
+        .spyOn(placeOrderUseCase, "validateProducts")
+        //@ts-expect-error - not return never
+        .mockRejectedValue(new Error("No Products selected"));
+
+      //@ts-expect-error - force set clientFacade
+      placeOrderUseCase["_clientFacade"] = mockClientFacade;
+
+      const input: PlaceOrderInputDTO = {
+        clientId: "1",
+        products: [],
+      };
+
+      await expect(placeOrderUseCase.execute(input)).rejects.toThrow(
+        new Error("No Products selected")
+      );
+      expect(mockValidateProduct).toHaveBeenCalledTimes(1);
+    });
   });
 });

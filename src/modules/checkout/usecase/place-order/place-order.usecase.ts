@@ -22,6 +22,7 @@ export class PlaceOrderUseCase implements UseCaseInterface {
 
     // valida se todos os productos passados são validos. Ex. verifica estoque
 
+    await this.validateProducts(input);
     // recuperar os productos
 
     // criar o objeto do client -> New Client
@@ -44,5 +45,11 @@ export class PlaceOrderUseCase implements UseCaseInterface {
       total: 0,
       products: [],
     };
+  }
+
+  private async validateProducts(input: PlaceOrderInputDTO): Promise<void> {
+    if (input.products.length === 0) {
+      throw new Error("No Products selected");
+    }
   }
 }
