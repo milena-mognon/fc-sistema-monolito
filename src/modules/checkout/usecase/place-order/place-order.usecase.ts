@@ -3,6 +3,8 @@ import { Id } from "../../../@shared/domain/value-object/id.value-object";
 import { ClientAdmFacdeInterface } from "../../../client-adm/facade/client-adm.facade.interface";
 import { ProductAdmFacadeInterface } from "../../../product-adm/facade/product-adm.facede.interface";
 import { StoreCatalogFacadeInterface } from "../../../store-catalog/facade/store-catalog.facade.interface";
+import { Client } from "../../domain/client.entity";
+import { Order } from "../../domain/order.entity";
 import { Product } from "../../domain/product.entity";
 import {
   PlaceOrderInputDTO,
@@ -36,10 +38,23 @@ export class PlaceOrderUseCase implements UseCaseInterface {
     await this.validateProducts(input);
 
     // recuperar os productos
+    const products = await Promise.all(
+      input.products.map((p) => this.getProduct(p.productId))
+    );
 
     // criar o objeto do client -> New Client
+    const myClient = new Client({
+      id: new Id(client.id),
+      name: client.name,
+      email: client.email,
+      address: client.address,
+    });
 
     // criar o objeto da order (client, products)
+    const order = new Order({
+      client: myClient,
+      products,
+    });
 
     // processar o pagamento -> paumentFacade.process(orderId, amount)
 
