@@ -63,4 +63,36 @@ describe("Invoice Facade test", () => {
       invoice.items.reduce((acc, pv) => (acc += pv.price), 0)
     );
   });
+  it("should generate an invoice", async () => {
+    const facade = InvoiceFacadeFactory.create();
+
+    const input = {
+      name: "Invoice Name 1",
+      document: "document 1",
+      street: "Street 1",
+      city: "City 1",
+      complement: "Complement 1",
+      number: "10",
+      state: "State 1",
+      zipCode: "123",
+      items: [
+        { id: "1", name: "Product 1", price: 100 },
+        { id: "2", name: "Product 1", price: 100 },
+      ],
+    };
+
+    const invoice = await facade.generate(input);
+
+    expect(invoice.id).toBeDefined();
+    expect(invoice.name).toBe("Invoice Name 1");
+    expect(invoice.document).toBe("document 1");
+    expect(invoice.street).toBe("Street 1");
+    expect(invoice.city).toBe("City 1");
+    expect(invoice.state).toBe("State 1");
+    expect(invoice.complement).toBe("Complement 1");
+    expect(invoice.number).toBe("10");
+    expect(invoice.zipCode).toBe("123");
+    expect(invoice.items.length).toBe(2);
+    expect(invoice.total).toBe(200);
+  });
 });

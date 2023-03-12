@@ -15,8 +15,6 @@ export class InvoiceRepository implements InvoiceGateway {
     if (!invoice) {
       throw new Error(`Invoice with id ${id} not found`);
     }
-    console.log(invoice);
-
     return new Invoice({
       id: new Id(invoice.id),
       document: invoice.document,
@@ -40,7 +38,48 @@ export class InvoiceRepository implements InvoiceGateway {
       updatedAt: invoice.updatedAt,
     });
   }
-  generate(data: Invoice): Promise<Invoice> {
-    throw new Error("Method not implemented.");
+  async generate(data: Invoice): Promise<Invoice> {
+    const input = {
+      id: data.id.id,
+      name: data.name,
+      document: data.document,
+      street: data.address.street,
+      number: data.address.number,
+      complement: data.address.complement,
+      city: data.address.city,
+      state: data.address.state,
+      zipCode: data.address.zipCode,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      items: data.items.map((item) => ({
+        id: item.id.id,
+        name: item.name,
+        price: item.price,
+      })),
+    };
+
+    await InvoiceModel.create(input, { include: ProductInvoiceModel });
+
+    return new Invoice({
+      id: new Id(input.id),
+      name: input.name,
+      document: input.document,
+      address: new Address({
+        street: input.street,
+        number: input.number,
+        complement: input.complement,
+        zipCode: input.zipCode,
+        city: input.city,
+        state: input.state,
+      }),
+      items: input.items.map(
+        (item) =>
+          new Product({
+            id: new Id(item.id),
+            name: item.name,
+            price: item.price,
+          })
+      ),
+    });
   }
 }
