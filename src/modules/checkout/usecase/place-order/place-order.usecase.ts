@@ -1,11 +1,13 @@
 import { UseCaseInterface } from "../../../@shared/domain/usecase/usecase.interface";
 import { Id } from "../../../@shared/domain/value-object/id.value-object";
 import { ClientAdmFacdeInterface } from "../../../client-adm/facade/client-adm.facade.interface";
+import { PaymentFacadeInterface } from "../../../payment/facade/payment.facade.dto";
 import { ProductAdmFacadeInterface } from "../../../product-adm/facade/product-adm.facede.interface";
 import { StoreCatalogFacadeInterface } from "../../../store-catalog/facade/store-catalog.facade.interface";
 import { Client } from "../../domain/client.entity";
 import { Order } from "../../domain/order.entity";
 import { Product } from "../../domain/product.entity";
+import { CheckoutGateway } from "../../gateway/checkout.gateway";
 import {
   PlaceOrderInputDTO,
   PlaceOrderOutputDTO,
@@ -15,15 +17,24 @@ export class PlaceOrderUseCase implements UseCaseInterface {
   private _clientFacade: ClientAdmFacdeInterface;
   private _productFacade: ProductAdmFacadeInterface;
   private _catalogFacade: StoreCatalogFacadeInterface;
+  private _checkoutReposiory: CheckoutGateway;
+  private _invoiceFacade: any; // InvoiceFacadeInterface;
+  private _paymentFacade: PaymentFacadeInterface;
 
   constructor(
     clientFacade: ClientAdmFacdeInterface,
     productFacade: ProductAdmFacadeInterface,
-    catalogFacade: StoreCatalogFacadeInterface
+    catalogFacade: StoreCatalogFacadeInterface,
+    checkoutReposiory: CheckoutGateway,
+    invoiceFacade: any, // InvoiceFacadeInterface,
+    paymentFacade: PaymentFacadeInterface
   ) {
     this._clientFacade = clientFacade;
     this._productFacade = productFacade;
     this._catalogFacade = catalogFacade;
+    this._checkoutReposiory = checkoutReposiory;
+    this._invoiceFacade = invoiceFacade;
+    this._paymentFacade = paymentFacade;
   }
 
   async execute(input: PlaceOrderInputDTO): Promise<PlaceOrderOutputDTO> {
@@ -57,20 +68,48 @@ export class PlaceOrderUseCase implements UseCaseInterface {
     });
 
     // processar o pagamento -> paumentFacade.process(orderId, amount)
-
+    const payment = await this._paymentFacade.process({
+      orderId: order.id.id,
+      amount: order.total(),
+    });
     // caso pagamento seja aprovado -> Gerar Invoice (fatura)
-
+    const invoice =
+      payment.status === "approved"
+        ? await this._invoiceFacade.create({
+            name: client.name,
+            // document: client.document,
+            // street: client.street,
+            // city: client.city,
+            // state: client.state,
+            // complement: client.complement,
+            // zipCode: client.zipCode,
+            // number: client.number,
+            items: products.map((p) => {
+              return {
+                id: p.id.id,
+                name: p.name,
+                price: p.salesPrice,
+              };
+            }),
+          })
+        : null;
     // mudar o status da order para approved
 
+    payment.status === "approved" && order.approved();
+    this._checkoutReposiory.addOrder(order);
     // retornar dto
 
     //
     return {
-      id: "",
-      invoiceId: "",
-      status: "",
-      total: 0,
-      products: [],
+      id: order.id.id,
+      invoiceId: payment.status === "approved" ? invoice.id : null,
+      status: order.status,
+      total: order.total(),
+      products: order.products.map((p) => {
+        return {
+          productId: p.id.id,
+        };
+      }),
     };
   }
 
