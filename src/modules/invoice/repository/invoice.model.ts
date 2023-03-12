@@ -1,4 +1,11 @@
-import { Column, Model, PrimaryKey, Table } from "sequelize-typescript";
+import {
+  Column,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+} from "sequelize-typescript";
+import { ProductInvoiceModel } from "./product-invoice.model";
 
 @Table({
   tableName: "invoices",
@@ -33,12 +40,12 @@ export class InvoiceModel extends Model {
   @Column({ allowNull: false })
   zipCode: string;
 
-  // @Column({ allowNull: false })
-  // items: string; Product
-
   @Column({ allowNull: false, field: "created_at" })
   createdAt: Date;
 
   @Column({ allowNull: false, field: "updated_at" })
   updatedAt: Date;
+
+  @HasMany(() => ProductInvoiceModel, { foreignKey: "invoice_id" })
+  items: ProductInvoiceModel[];
 }

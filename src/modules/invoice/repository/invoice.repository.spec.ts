@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
 import { InvoiceModel } from "./invoice.model";
 import { InvoiceRepository } from "./invoice.repository";
+import { ProductInvoiceModel } from "./product-invoice.model";
 
 describe("InvoiceRepository unit test", () => {
   let sequelize: Sequelize;
@@ -13,7 +14,7 @@ describe("InvoiceRepository unit test", () => {
       sync: { force: true },
     });
 
-    await sequelize.addModels([InvoiceModel]);
+    await sequelize.addModels([InvoiceModel, ProductInvoiceModel]);
     await sequelize.sync();
   });
 
@@ -24,24 +25,31 @@ describe("InvoiceRepository unit test", () => {
   it("should find an invoice", async () => {
     const invoiceRepository = new InvoiceRepository();
 
-    await InvoiceModel.create({
-      id: "1",
-      name: "Invoice 1",
-      document: "Document 123",
-      street: "Street 1",
-      number: "123",
-      complement: "Complemnt 123",
-      city: "City 123",
-      state: "State 123",
-      zipCode: "123456",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      // items: {
-      //   id: "1",
-      //   name: "Product 1",
-      //   price: 100,
-      // }[],
-    });
+    await InvoiceModel.create(
+      {
+        id: "1",
+        name: "Invoice 1",
+        document: "Document 123",
+        street: "Street 1",
+        number: "123",
+        complement: "Complemnt 123",
+        city: "City 123",
+        state: "State 123",
+        zipCode: "123456",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        items: [
+          {
+            id: "1",
+            name: "Product 1",
+            price: 100,
+          },
+        ],
+      },
+      {
+        include: ProductInvoiceModel,
+      }
+    );
 
     const invoice = await invoiceRepository.find("1");
 
@@ -54,5 +62,6 @@ describe("InvoiceRepository unit test", () => {
     expect(invoice.address.complement).toBe("Complemnt 123");
     expect(invoice.address.number).toBe("123");
     expect(invoice.address.zipCode).toBe("123456");
+    expect(invoice.items.length).toBe(1);
   });
 });

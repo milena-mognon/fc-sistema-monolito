@@ -6,7 +6,7 @@ import { FindInvoiceUseCase } from "./find-invoice.usecase";
 
 const invoice = new Invoice({
   id: new Id("1"),
-  name: "Invoice 1",
+  name: "Invoice Name 1",
   document: "document 1",
   address: new Address({
     street: "Strett 1",

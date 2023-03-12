@@ -27,7 +27,7 @@ export class FindInvoiceUseCase implements UseCaseInterface {
         name: item.name,
         price: item.price,
       })),
-      total: output.items.reduce((acc, pv) => (acc += pv.price), 0),
+      total: output.total(),
       createdAt: output.createdAt,
     };
   }
